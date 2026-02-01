@@ -33,4 +33,8 @@ with mlflow.start_run():
     acc = accuracy_score(y_test, y_pred)
 
     print("Accuracy:", acc)
-
+    
+    mlflow.sklearn.log_model(
+        model,
+        artifact_path="model"
+    )
