@@ -10,12 +10,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 # =========================
-# BASE DIR & TRACKING URI
+# BASE DIR
 # =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-MLRUNS_DIR = os.path.join(BASE_DIR, "mlruns")
-mlflow.set_tracking_uri(f"file:///{MLRUNS_DIR}")
 
 # =========================
 # LOAD DATA
@@ -31,6 +28,9 @@ X_train, X_test, y_train, y_test = train_test_split(
 # Set experiment
 mlflow.set_experiment("Titanic_Basic_Experiment")
 
+# =========================
+# MLFLOW RUN
+# =========================
 with mlflow.start_run():
 
     # Train model
@@ -44,7 +44,7 @@ with mlflow.start_run():
     # Log metric
     mlflow.log_metric("accuracy", acc)
 
-    # Log model (INI YANG BIKIN STRUKTUR STANDAR)
+    # Log model
     mlflow.sklearn.log_model(
         model,
         artifact_path="model"
@@ -57,15 +57,17 @@ with mlflow.start_run():
 
     plt.figure(figsize=(4, 4))
     plt.imshow(cm)
-    plt.title("Training Confusion Matrix")
+    plt.title("Confusion Matrix")
     plt.xlabel("Predicted")
     plt.ylabel("Actual")
     plt.colorbar()
     plt.tight_layout()
-    plt.savefig("training_confusion_matrix.png")
+
+    cm_path = os.path.join(BASE_DIR, "training_confusion_matrix.png")
+    plt.savefig(cm_path)
     plt.close()
 
-    mlflow.log_artifact("training_confusion_matrix.png")
+    mlflow.log_artifact(cm_path)
 
     # =========================
     # METRIC INFO (JSON)
@@ -78,17 +80,19 @@ with mlflow.start_run():
         "test_size": 0.2
     }
 
-    with open("metric_info.json", "w") as f:
+    json_path = os.path.join(BASE_DIR, "metric_info.json")
+    with open(json_path, "w") as f:
         json.dump(metric_info, f, indent=4)
 
-    mlflow.log_artifact("metric_info.json")
+    mlflow.log_artifact(json_path)
 
     # =========================
     # ESTIMATOR INFO (HTML)
     # =========================
-    with open("estimator.html", "w") as f:
+    html_path = os.path.join(BASE_DIR, "estimator.html")
+    with open(html_path, "w") as f:
         f.write(str(model))
 
-    mlflow.log_artifact("estimator.html")
+    mlflow.log_artifact(html_path)
 
     print("Accuracy:", acc)
