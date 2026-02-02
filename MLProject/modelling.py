@@ -25,9 +25,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# Set experiment (optional sebenarnya)
-mlflow.set_experiment("Titanic_Basic_Experiment")
-
 # =========================
 # TRAIN MODEL
 # =========================
@@ -42,10 +39,7 @@ acc = accuracy_score(y_test, y_pred)
 mlflow.log_metric("accuracy", acc)
 
 # Log model
-mlflow.sklearn.log_model(
-    model,
-    artifact_path="model"
-)
+mlflow.sklearn.log_model(model, "model")
 
 # =========================
 # CONFUSION MATRIX
@@ -60,7 +54,7 @@ plt.ylabel("Actual")
 plt.colorbar()
 plt.tight_layout()
 
-cm_path = os.path.join(BASE_DIR, "training_confusion_matrix.png")
+cm_path = "training_confusion_matrix.png"
 plt.savefig(cm_path)
 plt.close()
 
@@ -77,19 +71,17 @@ metric_info = {
     "test_size": 0.2
 }
 
-json_path = os.path.join(BASE_DIR, "metric_info.json")
-with open(json_path, "w") as f:
+with open("metric_info.json", "w") as f:
     json.dump(metric_info, f, indent=4)
 
-mlflow.log_artifact(json_path)
+mlflow.log_artifact("metric_info.json")
 
 # =========================
 # ESTIMATOR INFO (HTML)
 # =========================
-html_path = os.path.join(BASE_DIR, "estimator.html")
-with open(html_path, "w") as f:
+with open("estimator.html", "w") as f:
     f.write(str(model))
 
-mlflow.log_artifact(html_path)
+mlflow.log_artifact("estimator.html")
 
 print("Accuracy:", acc)
