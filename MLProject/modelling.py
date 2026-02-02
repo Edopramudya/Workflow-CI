@@ -10,9 +10,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 # =========================
-# BASE DIR
+# BASE DIR & TRACKING URI
 # =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+MLRUNS_DIR = os.path.join(BASE_DIR, "mlruns")
+mlflow.set_tracking_uri(f"file:///{MLRUNS_DIR}")
 
 # =========================
 # LOAD DATA
@@ -25,9 +28,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-# =========================
-# MLFLOW EXPERIMENT
-# =========================
+# Set experiment
 mlflow.set_experiment("Titanic_Basic_Experiment")
 
 with mlflow.start_run():
@@ -43,9 +44,7 @@ with mlflow.start_run():
     # Log metric
     mlflow.log_metric("accuracy", acc)
 
-    # =========================
-    # LOG MODEL (STRUKTUR STANDAR)
-    # =========================
+    # Log model (INI YANG BIKIN STRUKTUR STANDAR)
     mlflow.sklearn.log_model(
         model,
         artifact_path="model"
