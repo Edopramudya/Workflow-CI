@@ -34,7 +34,11 @@ with mlflow.start_run():
 
     print("Accuracy:", acc)
     
-    mlflow.sklearn.log_model(
+    mlflow.sklearn.log_model(model, artifact_path="model")
+
+    # TAMBAHAN INI
+    mlflow.sklearn.save_model(
         model,
-        artifact_path="model"
+        os.path.join(BASE_DIR, "saved_model")
     )
+
