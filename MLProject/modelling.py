@@ -14,9 +14,6 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 # =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-MLRUNS_DIR = os.path.join(BASE_DIR, "mlruns")
-mlflow.set_tracking_uri(f"file:///{MLRUNS_DIR}")
-
 # =========================
 # LOAD DATA
 # =========================
