@@ -19,10 +19,9 @@ jobs:
         run: |
           pip install mlflow scikit-learn pandas numpy
 
-      - name: Run training
+      - name: Run training with MLflow Project
         run: |
-          cd MLProject
-          python modelling.py
+          mlflow run MLProject
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4
