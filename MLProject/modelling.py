@@ -10,7 +10,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 # =========================
-# BASE DIR & TRACKING URI
+# BASE DIR
 # =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,64 +28,76 @@ X_train, X_test, y_train, y_test = train_test_split(
 # Set experiment
 mlflow.set_experiment("Titanic_Basic_Experiment")
 
-with mlflow.start_run():
+# ❗ TIDAK PERLU start_run()
+# MLflow Project sudah buat run otomatis
 
-    # Train model
-    model = LogisticRegression(max_iter=1000)
-    model.fit(X_train, y_train)
+# =========================
+# TRAIN MODEL
+# =========================
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
 
-    # Predict
-    y_pred = model.predict(X_test)
-    acc = accuracy_score(y_test, y_pred)
+# =========================
+# EVALUATION
+# =========================
+y_pred = model.predict(X_test)
+acc = accuracy_score(y_test, y_pred)
 
-    # Log metric
-    mlflow.log_metric("accuracy", acc)
+mlflow.log_metric("accuracy", acc)
 
-    # Log model (INI YANG BIKIN STRUKTUR STANDAR)
-    mlflow.sklearn.log_model(
-        model,
-        artifact_path="model"
-    )
+# =========================
+# LOG MODEL
+# =========================
+mlflow.sklearn.log_model(
+    model,
+    artifact_path="model"
+)
 
-    # =========================
-    # CONFUSION MATRIX
-    # =========================
-    cm = confusion_matrix(y_test, y_pred)
+# =========================
+# CONFUSION MATRIX
+# =========================
+cm = confusion_matrix(y_test, y_pred)
 
-    plt.figure(figsize=(4, 4))
-    plt.imshow(cm)
-    plt.title("Training Confusion Matrix")
-    plt.xlabel("Predicted")
-    plt.ylabel("Actual")
-    plt.colorbar()
-    plt.tight_layout()
-    plt.savefig("training_confusion_matrix.png")
-    plt.close()
+plt.figure(figsize=(4, 4))
+plt.imshow(cm)
+plt.title("Training Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.colorbar()
+plt.tight_layout()
 
-    mlflow.log_artifact("training_confusion_matrix.png")
+cm_path = os.path.join(BASE_DIR, "training_confusion_matrix.png")
+plt.savefig(cm_path)
+plt.close()
 
-    # =========================
-    # METRIC INFO (JSON)
-    # =========================
-    metric_info = {
-        "accuracy": acc,
-        "model_type": "LogisticRegression",
-        "dataset": "Titanic",
-        "n_features": X.shape[1],
-        "test_size": 0.2
-    }
+mlflow.log_artifact(cm_path)
 
-    with open("metric_info.json", "w") as f:
-        json.dump(metric_info, f, indent=4)
+# =========================
+# METRIC INFO JSON
+# =========================
+metric_info = {
+    "accuracy": acc,
+    "model_type": "LogisticRegression",
+    "dataset": "Titanic",
+    "n_features": X.shape[1],
+    "test_size": 0.2
+}
 
-    mlflow.log_artifact("metric_info.json")
+json_path = os.path.join(BASE_DIR, "metric_info.json")
 
-    # =========================
-    # ESTIMATOR INFO (HTML)
-    # =========================
-    with open("estimator.html", "w") as f:
-        f.write(str(model))
+with open(json_path, "w") as f:
+    json.dump(metric_info, f, indent=4)
 
-    mlflow.log_artifact("estimator.html")
+mlflow.log_artifact(json_path)
 
-    print("Accuracy:", acc)
+# =========================
+# ESTIMATOR HTML
+# =========================
+html_path = os.path.join(BASE_DIR, "estimator.html")
+
+with open(html_path, "w") as f:
+    f.write(str(model))
+
+mlflow.log_artifact(html_path)
+
+print("Accuracy:", acc)
